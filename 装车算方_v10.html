@@ -1,0 +1,271 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<title>装车算方工具</title>
+<style>
+:root{
+  --blue:#1976D2; --blue2:#42A5F5; --ink:#1a2332; --sub:#8a94a6;
+  --line:#eef1f6; --bg:#f4f7fb; --card:#ffffff;
+}
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{background:var(--bg)}
+body{
+  font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","Microsoft YaHei",sans-serif;
+  color:var(--ink);font-size:15px;line-height:1.5;padding-bottom:96px;
+  padding-top:env(safe-area-inset-top);padding-left:env(safe-area-inset-left);padding-right:env(safe-area-inset-right);
+}
+/* ===== 顶部汇总 ===== */
+.header{
+  background:linear-gradient(135deg,#1565C0,#42A5F5);color:#fff;
+  padding:16px 16px 18px;text-align:center;position:sticky;top:0;z-index:100;
+  box-shadow:0 3px 14px rgba(25,118,210,.28);
+}
+.header .lab{font-size:12px;opacity:.9;letter-spacing:1px}
+.header .tv{font-size:34px;font-weight:800;line-height:1.15;margin-top:2px;font-variant-numeric:tabular-nums}
+.header .ts{font-size:12px;opacity:.88;margin-top:4px}
+/* ===== 搜索 ===== */
+.search{position:sticky;top:0;z-index:99;padding:10px 12px;background:rgba(255,255,255,.92);backdrop-filter:blur(8px);border-bottom:1px solid var(--line)}
+.search input{width:100%;height:42px;padding:0 14px 0 38px;border:1.5px solid #cfe4fb;border-radius:21px;font-size:15px;background:#f7fbff url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%239aa7b8' stroke-width='2.5' stroke-linecap='round'><circle cx='11' cy='11' r='7'/><path d='M20 20l-3.5-3.5'/></svg>") 14px center/16px no-repeat;outline:none}
+.search input:focus{border-color:var(--blue2)}
+/* ===== 分组 ===== */
+.group{margin:14px 12px 0;background:var(--card);border-radius:14px;overflow:hidden;box-shadow:0 2px 10px rgba(30,60,110,.06)}
+.group-header{padding:12px 14px;background:linear-gradient(90deg,#e8f2fe,#f4f8fe);font-weight:700;font-size:14px;color:var(--blue);display:flex;justify-content:space-between;align-items:center;cursor:pointer;user-select:none;letter-spacing:.5px}
+.group-header .arrow{font-size:11px;color:#90b4dd;transition:transform .2s}
+.group-header.collapsed .arrow{transform:rotate(-90deg)}
+.group-body{padding:10px}
+/* ===== 网格通用 ===== */
+.grid{display:grid;gap:9px}
+.g-2{grid-template-columns:repeat(2,1fr)}
+.g-3{grid-template-columns:repeat(3,1fr)}
+.g-4{grid-template-columns:repeat(2,1fr)}
+.g-6{grid-template-columns:repeat(2,1fr)}
+.sub-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:9px}
+/* ===== 卡片 ===== */
+.card{background:#fff;border:1px solid var(--line);border-radius:12px;padding:11px 8px;display:flex;flex-direction:column;gap:8px}
+.card .name{font-size:20px;font-weight:800;line-height:1.25;text-align:center;min-height:42px;display:flex;align-items:center;justify-content:center}
+.card .size{font-size:10.5px;color:var(--sub);text-align:center;line-height:1.35;font-variant-numeric:tabular-nums;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.card .size b{color:#0d8a6f;font-weight:700}
+.card .ctrl{display:flex;align-items:center;justify-content:center;gap:5px}
+.card .ctrl button{width:26px;height:26px;border:none;border-radius:7px;font-size:15px;font-weight:600;display:flex;align-items:center;justify-content:center;line-height:1;flex:none}
+.card .ctrl .minus{background:#fff0f0;color:#e53935}
+.card .ctrl .plus{background:#e3f2fd;color:var(--blue)}
+.card .ctrl input{width:100%;height:26px;text-align:center;border:1.5px solid #e6edf5;border-radius:7px;font-size:13px;font-weight:700;color:var(--ink);font-variant-numeric:tabular-nums;-moz-appearance:textfield;background:#fbfdff;padding:0 2px}
+.card .ctrl input::-webkit-outer-spin-button,.card .ctrl input::-webkit-inner-spin-button{-webkit-appearance:none;margin:0}
+.card .vol{font-size:9.5px;color:var(--sub);text-align:center;font-variant-numeric:tabular-nums;line-height:1.25}
+.card .vol b{font-size:11px;color:var(--blue);font-weight:700}
+/* ===== 车厢 ===== */
+.truck{margin:14px 12px 0;background:var(--card);border-radius:14px;padding:14px;box-shadow:0 2px 10px rgba(30,60,110,.06)}
+.truck h3{font-size:14px;color:var(--blue);margin-bottom:10px;display:flex;align-items:center;gap:6px}
+.truck-inputs{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+.truck-inputs input{width:100%;height:44px;padding:0 6px;border:1.5px solid #cfe4fb;border-radius:10px;font-size:15px;text-align:center;background:#f7fbff;outline:none;font-variant-numeric:tabular-nums}
+.truck-inputs input:focus{border-color:var(--blue2)}
+.progress-bar{height:24px;background:#eef3fa;border-radius:12px;overflow:hidden;margin:12px 0 8px;position:relative}
+.progress-fill{height:100%;width:0;background:linear-gradient(90deg,#1976D2,#42A5F5);border-radius:12px;transition:width .35s ease}
+.progress-bar .label{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;color:#4a5568}
+.truck-result{font-size:13px;color:#5a6472;text-align:center}
+/* ===== 实际方数卡 ===== */
+.real-card{margin:14px 12px 0;background:#FFF9E6;border:2px solid #FFD54F;border-left:6px solid #FF8F00;border-radius:14px;padding:16px;text-align:center}
+.real-card .rt{font-size:12.5px;color:#7a5a00;margin-bottom:4px}
+.real-card .rv{font-size:26px;font-weight:800;margin:4px 0;color:#E65100;font-variant-numeric:tabular-nums}
+.real-card .rs{font-size:11.5px;color:#8a6a00;line-height:1.6}
+/* ===== 按钮 ===== */
+.btn-row{display:grid;grid-template-columns:2fr 1fr;gap:10px;margin:16px 12px 0}
+.btn-row button{height:48px;border:none;border-radius:12px;font-size:15px;font-weight:700;cursor:pointer;letter-spacing:.5px}
+.btn-copy{background:linear-gradient(135deg,#1976D2,#42A5F5);color:#fff;box-shadow:0 4px 12px rgba(25,118,210,.3)}
+.btn-reset{background:#eef1f6;color:#5a6472}
+.toast{position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);background:rgba(26,35,50,.94);color:#fff;padding:14px 26px;border-radius:12px;font-size:14.5px;z-index:999;display:none;max-width:80%;text-align:center}
+</style>
+</head>
+<body>
+
+<div class="header">
+  <div class="lab">货物理论总方数</div>
+  <div class="tv" id="totalVol">0.0000</div>
+  <div class="ts" id="totalBox">共 0 箱</div>
+</div>
+
+<div class="search">
+  <input type="text" id="search" placeholder="搜索箱型名称" oninput="filterItems()">
+</div>
+
+<div id="groups"></div>
+
+<div class="truck">
+  <h3>🚛 车厢尺寸（米）</h3>
+  <div class="truck-inputs">
+    <input type="number" id="tL" placeholder="长" step="0.1" inputmode="decimal" oninput="calcTruck()">
+    <input type="number" id="tW" placeholder="宽" step="0.1" inputmode="decimal" oninput="calcTruck()">
+    <input type="number" id="tH" placeholder="高" step="0.1" inputmode="decimal" oninput="calcTruck()">
+  </div>
+  <div class="progress-bar">
+    <div class="progress-fill" id="progFill"></div>
+    <div class="label" id="progLabel">0%</div>
+  </div>
+  <div class="truck-result" id="truckResult"></div>
+</div>
+
+<div class="real-card">
+  <div class="rt">🚚 计入实际空间系数 0.85（轮包 / 左右上不平整）</div>
+  <div class="rv">需 <span id="realVol">0.00</span> 方以上的货车</div>
+  <div class="rs">计算方式：货物总方数 ÷ 0.85<br>例：2 方货物 → 需叫 2.35 方以上的货车</div>
+</div>
+
+<div class="btn-row">
+  <button class="btn-copy" onclick="exportSummary()">📋 复制装车汇总</button>
+  <button class="btn-reset" onclick="resetAll()">🗑 清零</button>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+const boxes = [
+  { group:"常规系列", cols:2, name:"大橙箱", l:42, w:31, h:17.5 },
+  { group:"常规系列", cols:2, name:"大蓝箱", l:42, w:31, h:17.5 },
+  { group:"常规系列", cols:3, name:"小绿箱", l:39.5, w:27, h:16 },
+  { group:"常规系列", cols:3, name:"小紫箱", l:39.5, w:27, h:16 },
+  { group:"常规系列", cols:3, name:"小橙箱", l:34, w:25.5, h:16.5 },
+  { group:"煮面/烟火系列", cols:4, name:"两人煮面", l:39.5, w:29, h:22 },
+  { group:"煮面/烟火系列", cols:4, name:"人间烟火", l:39.5, w:29, h:22 },
+  { group:"煮面/烟火系列", cols:4, name:"大红箱", l:39.5, w:29, h:22 },
+  { group:"煮面/烟火系列", cols:4, name:"蓝色小麦箱", l:34, w:26, h:17 },
+  { group:"专箱系列", cols:6, name:"掂珈拉-黄", l:39.5, w:27, h:16 },
+  { group:"专箱系列", cols:6, name:"掂珈拉-蓝", l:39.5, w:27, h:16 },
+  { group:"专箱系列", cols:6, name:"雪莹粉", l:32.5, w:28.5, h:25.5 },
+  { group:"专箱系列", cols:6, name:"御用粉", l:32.5, w:28.5, h:25.5 },
+  { group:"专箱系列", cols:6, name:"咔司粉", l:39.5, w:27.5, h:17.5 },
+  { group:"专箱系列", cols:6, name:"珀晶粉", l:39.5, w:27.5, h:17.5 },
+  { group:"润盛系列", cols:3, name:"润盛大狮子绿", l:39.5, w:29, h:22 },
+  { group:"润盛系列", cols:3, name:"润盛小狮子橘", l:34, w:6.5, h:25.5 },
+  { group:"润盛系列", cols:3, name:"润盛小狮子绿", l:34, w:6.5, h:25.5 },
+  { group:"迎俐系列", cols:3, name:"迎俐-卡其5kg", l:39.5, w:27.5, h:17.5 },
+  { group:"迎俐系列", cols:3, name:"迎俐-绿5kg", l:39.5, w:27.5, h:17.5 },
+  { group:"迎俐系列", cols:3, name:"迎俐-金10kg", l:43, w:30.5, h:17.5 },
+  { group:"其他系列", cols:3, name:"猪油/黄油", l:24, w:24.5, h:35 },
+  { group:"其他系列", cols:3, name:"面粉", l:74, w:48, h:17 },
+];
+const REAL_FACTOR = 0.85;
+let counts = {};
+boxes.forEach((_,i)=>{ counts[i]=0; });
+
+function getVol(i){ const b=boxes[i]; return b.l*b.w*b.h/1000000*(counts[i]||0); }
+
+function updateTotal(){
+  let totalV=0,totalN=0;
+  boxes.forEach((_,i)=>{ totalV+=getVol(i); totalN+=(counts[i]||0); });
+  document.getElementById('totalVol').textContent=totalV.toFixed(4);
+  document.getElementById('totalBox').textContent='共 '+totalN+' 箱';
+  const real = totalV>0 ? totalV/REAL_FACTOR : 0;
+  document.getElementById('realVol').textContent=real.toFixed(2);
+}
+
+function changeCount(i,d){
+  counts[i]=Math.max(0,(counts[i]||0)+d);
+  const inp=document.getElementById('inp'+i); if(inp) inp.value=counts[i];
+  const v=document.getElementById('vol'+i); if(v) v.innerHTML='<b>'+getVol(i).toFixed(4)+'方</b>/'+counts[i]+'箱';
+  updateTotal(); calcTruck();
+}
+function setCount(i,val){
+  counts[i]=Math.max(0,parseInt(val)||0);
+  const inp=document.getElementById('inp'+i); if(inp) inp.value=counts[i];
+  const v=document.getElementById('vol'+i); if(v) v.innerHTML='<b>'+getVol(i).toFixed(4)+'方</b>/'+counts[i]+'箱';
+  updateTotal(); calcTruck();
+}
+
+function calcTruck(){
+  const L=parseFloat(document.getElementById('tL').value)||0;
+  const W=parseFloat(document.getElementById('tW').value)||0;
+  const H=parseFloat(document.getElementById('tH').value)||0;
+  let totalV=0; boxes.forEach((_,i)=>totalV+=getVol(i));
+  const fill=document.getElementById('progFill'),plabel=document.getElementById('progLabel'),result=document.getElementById('truckResult');
+  if(L>0&&W>0&&H>0){
+    const tv=L*W*H; const pct=Math.min(100,totalV/tv*100);
+    fill.style.width=pct+'%'; plabel.textContent=pct.toFixed(1)+'%';
+    result.innerHTML = totalV<=tv
+      ? `车厢 <b>${tv.toFixed(2)}</b> 方，货物 <b>${totalV.toFixed(4)}</b> 方 · <span style="color:#2e7d32">✅ 容积足够</span>`
+      : `车厢 <b>${tv.toFixed(2)}</b> 方，货物 <b>${totalV.toFixed(4)}</b> 方 · <span style="color:#d32f2f">⚠️ 超出 ${(totalV-tv).toFixed(4)} 方</span>`;
+  } else { fill.style.width='0%'; plabel.textContent='0%'; result.textContent=''; }
+}
+
+function showToast(msg){
+  const t=document.getElementById('toast'); t.textContent=msg; t.style.display='block';
+  clearTimeout(t._tm); t._tm=setTimeout(()=>{t.style.display='none';},1900);
+}
+
+function exportSummary(){
+  let lines=['=== 装车汇总 ===',''];
+  let totalV=0,totalN=0;
+  boxes.forEach((b,i)=>{ const n=counts[i]||0; if(n>0){ const v=b.l*b.w*b.h/1000000*n; totalV+=v; totalN+=n; lines.push(`${b.name} × ${n}件 = ${v.toFixed(4)}方`); } });
+  if(totalN===0){ showToast('请先输入箱型数量'); return; }
+  lines.push('','合计：'+totalN+'箱，'+totalV.toFixed(4)+'方');
+  lines.push('实际需货车厢方数（÷0.85）：'+(totalV/REAL_FACTOR).toFixed(2)+'方以上');
+  const L=document.getElementById('tL').value,W=document.getElementById('tW').value,H=document.getElementById('tH').value;
+  if(L&&W&&H) lines.push('车厢：'+L+'×'+W+'×'+H+'m = '+(parseFloat(L)*parseFloat(W)*parseFloat(H)).toFixed(2)+'方');
+  const text=lines.join('\n');
+  const done=()=>showToast('✅ 已复制到剪贴板！');
+  if(navigator.clipboard&&navigator.clipboard.writeText){ navigator.clipboard.writeText(text).then(done).catch(fallback); }
+  else fallback();
+  function fallback(){ const ta=document.createElement('textarea'); ta.value=text; ta.style.position='fixed'; ta.style.opacity=0; document.body.appendChild(ta); ta.focus(); ta.select(); try{ document.execCommand('copy'); done(); }catch(e){ showToast('复制失败，请手动选择'); } document.body.removeChild(ta); }
+}
+
+function resetAll(){
+  if(!confirm('确定全部清零？')) return;
+  boxes.forEach((_,i)=>{ counts[i]=0; });
+  document.querySelectorAll('.card input[type=number]').forEach(inp=>inp.value=0);
+  boxes.forEach((_,i)=>{ const v=document.getElementById('vol'+i); if(v) v.innerHTML='<b>0.0000方</b>/0箱'; });
+  updateTotal(); calcTruck();
+}
+
+function filterItems(){
+  const kw=document.getElementById('search').value.trim().toLowerCase();
+  document.querySelectorAll('.card').forEach(el=>{ el.style.display = el.dataset.name.includes(kw)?'':'none'; });
+  document.querySelectorAll('.group').forEach(g=>{
+    const anyVis=[...g.querySelectorAll('.card')].some(c=>c.style.display!=='none');
+    g.style.display = kw==='' || anyVis ? '' : 'none';
+  });
+}
+
+function render(){
+  const groups={};
+  boxes.forEach((b,i)=>{ (groups[b.group]=groups[b.group]||[]).push(i); });
+  const card=(i)=>{
+      const b=boxes[i], sv=(b.l*b.w*b.h/1000000).toFixed(4);
+      return `<div class="card" data-name="${b.name.toLowerCase()}">
+        <div class="name">${b.name}</div>
+        <div class="size">${b.l}×${b.w}×${b.h}cm 丨 <b>${sv}</b>方/箱</div>
+        <div class="ctrl">
+          <button class="minus" onclick="changeCount(${i},-1)" aria-label="减">−</button>
+          <input type="number" id="inp${i}" value="0" min="0" inputmode="numeric" onchange="setCount(${i},this.value)">
+          <button class="plus" onclick="changeCount(${i},1)" aria-label="加">＋</button>
+        </div>
+        <div class="vol" id="vol${i}"><b>0.0000方</b>/0箱</div>
+      </div>`;
+    };
+  const wrapClass=(cols)=>{ return 'grid ' + {2:'g-2',3:'g-3',4:'g-4',6:'g-6'}[cols]; };
+  let html='';
+  for(const [gname,items] of Object.entries(groups)){
+    html+=`<div class="group" data-group="${gname}"><div class="group-header" onclick="toggleGroup(this)"><span>${gname}</span><span class="arrow">▼</span></div><div class="group-body">`;
+    if(gname==='常规系列'){
+      const big=items.filter(i=>boxes[i].cols===2), small=items.filter(i=>boxes[i].cols===3);
+      html+=`<div class="${wrapClass(2)}">${big.map(card).join('')}</div>`;
+      if(small.length) html+=`<div class="sub-grid" style="margin-top:9px">${small.map(card).join('')}</div>`;
+    } else {
+      const cols = Math.max(...items.map(i=>boxes[i].cols));
+      html+=`<div class="${wrapClass(cols)}">${items.map(card).join('')}</div>`;
+    }
+    html+='</div></div>';
+  }
+  document.getElementById('groups').innerHTML=html;
+  updateTotal();
+}
+function toggleGroup(el){
+  el.classList.toggle('collapsed');
+  const body=el.nextElementSibling;
+  body.style.display = body.style.display==='none' ? '' : 'none';
+}
+render();
+</script>
+</body>
+</html>
