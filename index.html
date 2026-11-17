@@ -36,23 +36,19 @@ body{
 .group-header .arrow{font-size:11px;color:#90b4dd;transition:transform .2s}
 .group-header.collapsed .arrow{transform:rotate(-90deg)}
 .group-body{padding:10px}
-/* ===== 网格通用 ===== */
-.grid{display:grid;gap:9px}
-.g-2{grid-template-columns:repeat(2,1fr)}
-.g-3{grid-template-columns:repeat(3,1fr)}
-.g-4{grid-template-columns:repeat(2,1fr)}
-.g-6{grid-template-columns:repeat(2,1fr)}
-.sub-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:9px}
+/* ===== 网格：全站统一两列 ===== */
+.grid{display:grid;grid-template-columns:repeat(2,1fr);gap:9px}
+.sub-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:9px}
 /* ===== 卡片 ===== */
-.card{background:#fff;border:1px solid var(--line);border-radius:12px;padding:11px 8px;display:flex;flex-direction:column;gap:8px}
-.card .name{font-size:20px;font-weight:800;line-height:1.25;text-align:center;min-height:42px;display:flex;align-items:center;justify-content:center}
-.card .size{font-size:10.5px;color:var(--sub);text-align:center;line-height:1.35;font-variant-numeric:tabular-nums;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.card{background:#fff;border:1px solid var(--line);border-radius:12px;padding:11px 9px;display:flex;flex-direction:column;gap:6px}
+.card .name{font-size:19px;font-weight:800;line-height:1.25;text-align:center;min-height:40px;display:flex;align-items:center;justify-content:center}
+.card .size{font-size:11px;color:var(--sub);text-align:center;line-height:1.35;font-variant-numeric:tabular-nums;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .card .size b{color:#0d8a6f;font-weight:700}
 .card .ctrl{display:flex;align-items:center;justify-content:center;gap:5px}
-.card .ctrl button{width:26px;height:26px;border:none;border-radius:7px;font-size:15px;font-weight:600;display:flex;align-items:center;justify-content:center;line-height:1;flex:none}
+.card .ctrl button{width:32px;height:46px;border:none;border-radius:8px;font-size:20px;font-weight:700;display:flex;align-items:center;justify-content:center;line-height:1;flex:none}
 .card .ctrl .minus{background:#fff0f0;color:#e53935}
 .card .ctrl .plus{background:#e3f2fd;color:var(--blue)}
-.card .ctrl input{width:100%;height:26px;text-align:center;border:1.5px solid #e6edf5;border-radius:7px;font-size:13px;font-weight:700;color:var(--ink);font-variant-numeric:tabular-nums;-moz-appearance:textfield;background:#fbfdff;padding:0 2px}
+.card .ctrl input{width:100%;height:46px;text-align:center;border:1.5px solid #e6edf5;border-radius:8px;font-size:19px;font-weight:700;color:var(--ink);font-variant-numeric:tabular-nums;-moz-appearance:textfield;background:#fbfdff;padding:0 2px}
 .card .ctrl input::-webkit-outer-spin-button,.card .ctrl input::-webkit-inner-spin-button{-webkit-appearance:none;margin:0}
 .card .vol{font-size:9.5px;color:var(--sub);text-align:center;font-variant-numeric:tabular-nums;line-height:1.25}
 .card .vol b{font-size:11px;color:var(--blue);font-weight:700}
@@ -66,7 +62,7 @@ body{
 .progress-fill{height:100%;width:0;background:linear-gradient(90deg,#1976D2,#42A5F5);border-radius:12px;transition:width .35s ease}
 .progress-bar .label{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;color:#4a5568}
 .truck-result{font-size:13px;color:#5a6472;text-align:center}
-/* ===== 实际方数卡 ===== */
+/* ===== 实际方数卡（浅黄+居中） ===== */
 .real-card{margin:14px 12px 0;background:#FFF9E6;border:2px solid #FFD54F;border-left:6px solid #FF8F00;border-radius:14px;padding:16px;text-align:center}
 .real-card .rt{font-size:12.5px;color:#7a5a00;margin-bottom:4px}
 .real-card .rv{font-size:26px;font-weight:800;margin:4px 0;color:#E65100;font-variant-numeric:tabular-nums}
@@ -122,29 +118,29 @@ body{
 
 <script>
 const boxes = [
-  { group:"常规系列", cols:2, name:"大橙箱", l:42, w:31, h:17.5 },
-  { group:"常规系列", cols:2, name:"大蓝箱", l:42, w:31, h:17.5 },
-  { group:"常规系列", cols:3, name:"小绿箱", l:39.5, w:27, h:16 },
-  { group:"常规系列", cols:3, name:"小紫箱", l:39.5, w:27, h:16 },
-  { group:"常规系列", cols:3, name:"小橙箱", l:34, w:25.5, h:16.5 },
-  { group:"煮面/烟火系列", cols:4, name:"两人煮面", l:39.5, w:29, h:22 },
-  { group:"煮面/烟火系列", cols:4, name:"人间烟火", l:39.5, w:29, h:22 },
-  { group:"煮面/烟火系列", cols:4, name:"大红箱", l:39.5, w:29, h:22 },
-  { group:"煮面/烟火系列", cols:4, name:"蓝色小麦箱", l:34, w:26, h:17 },
-  { group:"专箱系列", cols:6, name:"掂珈拉-黄", l:39.5, w:27, h:16 },
-  { group:"专箱系列", cols:6, name:"掂珈拉-蓝", l:39.5, w:27, h:16 },
-  { group:"专箱系列", cols:6, name:"雪莹粉", l:32.5, w:28.5, h:25.5 },
-  { group:"专箱系列", cols:6, name:"御用粉", l:32.5, w:28.5, h:25.5 },
-  { group:"专箱系列", cols:6, name:"咔司粉", l:39.5, w:27.5, h:17.5 },
-  { group:"专箱系列", cols:6, name:"珀晶粉", l:39.5, w:27.5, h:17.5 },
-  { group:"润盛系列", cols:3, name:"润盛大狮子绿", l:39.5, w:29, h:22 },
-  { group:"润盛系列", cols:3, name:"润盛小狮子橘", l:34, w:6.5, h:25.5 },
-  { group:"润盛系列", cols:3, name:"润盛小狮子绿", l:34, w:6.5, h:25.5 },
-  { group:"迎俐系列", cols:3, name:"迎俐-卡其5kg", l:39.5, w:27.5, h:17.5 },
-  { group:"迎俐系列", cols:3, name:"迎俐-绿5kg", l:39.5, w:27.5, h:17.5 },
-  { group:"迎俐系列", cols:3, name:"迎俐-金10kg", l:43, w:30.5, h:17.5 },
-  { group:"其他系列", cols:3, name:"猪油/黄油", l:24, w:24.5, h:35 },
-  { group:"其他系列", cols:3, name:"面粉", l:74, w:48, h:17 },
+  { group:"常规系列", name:"大橙箱", l:42, w:31, h:17.5 },
+  { group:"常规系列", name:"大蓝箱", l:42, w:31, h:17.5 },
+  { group:"常规系列", name:"小绿箱", l:39.5, w:27, h:16 },
+  { group:"常规系列", name:"小紫箱", l:39.5, w:27, h:16 },
+  { group:"常规系列", name:"小橙箱", l:34, w:25.5, h:16.5 },
+  { group:"煮面/烟火系列", name:"两人煮面", l:39.5, w:29, h:22 },
+  { group:"煮面/烟火系列", name:"人间烟火", l:39.5, w:29, h:22 },
+  { group:"煮面/烟火系列", name:"大红箱", l:39.5, w:29, h:22 },
+  { group:"煮面/烟火系列", name:"蓝色小麦箱", l:34, w:26, h:17 },
+  { group:"专箱系列", name:"掂珈拉-黄", l:39.5, w:27, h:16 },
+  { group:"专箱系列", name:"掂珈拉-蓝", l:39.5, w:27, h:16 },
+  { group:"专箱系列", name:"雪莹粉", l:32.5, w:28.5, h:25.5 },
+  { group:"专箱系列", name:"御用粉", l:32.5, w:28.5, h:25.5 },
+  { group:"专箱系列", name:"咔司粉", l:39.5, w:27.5, h:17.5 },
+  { group:"专箱系列", name:"珀晶粉", l:39.5, w:27.5, h:17.5 },
+  { group:"润盛系列", name:"润盛大狮子绿", l:39.5, w:29, h:22 },
+  { group:"润盛系列", name:"润盛小狮子橘", l:34, w:6.5, h:25.5 },
+  { group:"润盛系列", name:"润盛小狮子绿", l:34, w:6.5, h:25.5 },
+  { group:"迎俐系列", name:"迎俐-卡其5kg", l:39.5, w:27.5, h:17.5 },
+  { group:"迎俐系列", name:"迎俐-绿5kg", l:39.5, w:27.5, h:17.5 },
+  { group:"迎俐系列", name:"迎俐-金10kg", l:43, w:30.5, h:17.5 },
+  { group:"其他系列", name:"猪油/黄油", l:24, w:24.5, h:35 },
+  { group:"其他系列", name:"面粉", l:74, w:48, h:17 },
 ];
 const REAL_FACTOR = 0.85;
 let counts = {};
@@ -243,18 +239,10 @@ function render(){
         <div class="vol" id="vol${i}"><b>0.0000方</b>/0箱</div>
       </div>`;
     };
-  const wrapClass=(cols)=>{ return 'grid ' + {2:'g-2',3:'g-3',4:'g-4',6:'g-6'}[cols]; };
   let html='';
   for(const [gname,items] of Object.entries(groups)){
     html+=`<div class="group" data-group="${gname}"><div class="group-header" onclick="toggleGroup(this)"><span>${gname}</span><span class="arrow">▼</span></div><div class="group-body">`;
-    if(gname==='常规系列'){
-      const big=items.filter(i=>boxes[i].cols===2), small=items.filter(i=>boxes[i].cols===3);
-      html+=`<div class="${wrapClass(2)}">${big.map(card).join('')}</div>`;
-      if(small.length) html+=`<div class="sub-grid" style="margin-top:9px">${small.map(card).join('')}</div>`;
-    } else {
-      const cols = Math.max(...items.map(i=>boxes[i].cols));
-      html+=`<div class="${wrapClass(cols)}">${items.map(card).join('')}</div>`;
-    }
+    html+=`<div class="grid">${items.map(card).join('')}</div>`;
     html+='</div></div>';
   }
   document.getElementById('groups').innerHTML=html;
